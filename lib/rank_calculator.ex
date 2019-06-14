@@ -39,24 +39,21 @@ defmodule PockerOpdracht.RankCalculator do
         cond do
           rank == :straight_flush -> {hand_name, :straight_flush, values}
           rank == :four_of_a_kind -> {hand_name, :four_of_a_kind, values}
-          rank == :full_house -> {hand_name, :full_house}
+          rank == :full_house -> {hand_name, :full_house, values}
+
+          true ->
+            {hand_name, :high_card, values}
         end
     end
 
   end
 
   defp get_rank(suits, values) do
-    case is_straight_flush?(suits, values) do
-      true -> {:ok, :straight_flush}
-      false ->
-        case is_four_of_a_kind?(values) do
-          true -> {:ok, :four_of_a_kind}
-          false ->
-            case is_full_house?(values) do
-              true -> {:ok, :full_house}
-              false -> :wrong
-            end
-        end
+    cond do
+      is_straight_flush?(suits, values) -> {:ok, :straight_flush}
+      is_four_of_a_kind?(values) -> {:ok, :four_of_a_kind}
+      is_full_house?(values) -> {:ok, :full_house}
+
     end
 
   end
@@ -104,8 +101,10 @@ defmodule PockerOpdracht.RankCalculator do
     case Enum.count(values) == 5 do
       false -> false
       true ->
-        values = Enum.map values, fn x -> @values_rank[x] end
-        values |> Enum.uniq() |> Enum.count() == 2
+        Enum.any? values, fn v ->
+          4 == Enum.count values, fn s -> s == v
+        end
+      end 
       end
     end
 
@@ -119,16 +118,10 @@ defmodule PockerOpdracht.RankCalculator do
     defp three_cards_same_value?(values) do
       case Enum.count(values) == 5 do
         false -> false
-        true ->
-          values = Enum.map values, fn x -> @values_rank[x] end
-          sorted_values = Enum.sort(values)
-          case sorted_values |> Enum.take(3) |> Enum.uniq() |> length() == 1 do
-            true -> true
-            false -> case sorted_values |> Enum.reverse() |> Enum.take(3) |> Enum.uniq() |> length() == 1 do
-              true -> true
-              false -> false
-            end
-          end
+        true -> Enum.any? values, fn v ->
+          3 == Enum.count values, fn s -> s == v
+        end
+        end
       end
     end
 
@@ -137,15 +130,13 @@ defmodule PockerOpdracht.RankCalculator do
         false -> false
         true ->
           values = Enum.map values, fn x -> @values_rank[x] end
-          sorted_values = Enum.sort(values)
-          case sorted_values |> Enum.chunk_every(2) |> Enum.any?(fn v -> v |> Enum.uniq() |> length() == 1 end) do
-            true -> true
-            false ->
-              case sorted_values |> Enum.reverse() |> Enum.chunk_every(2) |> Enum.any?(fn v -> v |> Enum.uniq() |> length()end) do
-                true -> true
-                false -> false
-              end
-          end
+          values = Enum.sort(values)
+
+          values |> Enum.any?( fn v ->
+            Enum.each @index, fn i ->
+              v == Enum.at(values, i + 1)
+            end
+          end )
       end
     end
 

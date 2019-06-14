@@ -11,15 +11,17 @@ defmodule RankCalculatorTest do
       hand_name = hand |> Enum.into(%{}) |> Map.keys |> List.first |> to_string
       assert {hand_name, :straight_flush, values} == @subject.compute_rank(hand)
     end
-    test "4 cards with the same value - compute_rank/1 returns {hand_name, :four_of_a_kind, values}" do
-      hand = [white: "3H 5D 5S 5C 5H"]
-      values = ["3", "5", "5", "5", "5"]
+    test "4 cards have the same value - compute_rank/1 returns {hand_name, :four_of_a_kind, values}" do
+      hand = [white: "2H KD KH KS KC"]
+      values = ["2", "K", "K", "K", "K"]
       hand_name = hand |> Enum.into(%{}) |> Map.keys |> List.first |> to_string
       assert {hand_name, :four_of_a_kind, values} == @subject.compute_rank(hand)
     end
-    test "3 cards of the same value, with the remaining 2 cards forming a pair - compute_rank/1 returns {hand_name, :full_house, values}" do
-      hand = [white: "3H KH 3D 3S KC"]
-      values = ["3", "K", "3", "3", "K"]
+    test "3 cards have the same value with remaining two forming a pair - compute_rank/1 returns {hand_name, :full_house, values}" do
+
+      hand = [black: "3H 5S 3C 5H 3D"]
+      values = ["3", "5", "3", "5", "3"]
+
       hand_name = hand |> Enum.into(%{}) |> Map.keys |> List.first |> to_string
       assert {hand_name, :full_house, values} == @subject.compute_rank(hand)
     end
