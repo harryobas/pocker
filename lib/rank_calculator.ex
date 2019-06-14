@@ -39,6 +39,7 @@ defmodule PockerOpdracht.RankCalculator do
         cond do
           rank == :straight_flush -> {hand_name, :straight_flush, values}
           rank == :four_of_a_kind -> {hand_name, :four_of_a_kind, values}
+          rank == :full_house -> {hand_name, :full_house}
         end
     end
 
@@ -50,7 +51,11 @@ defmodule PockerOpdracht.RankCalculator do
       false ->
         case is_four_of_a_kind?(values) do
           true -> {:ok, :four_of_a_kind}
-          false -> :wrong
+          false ->
+            case is_full_house?(values) do
+              true -> {:ok, :full_house}
+              false -> :wrong
+            end
         end
     end
 
@@ -104,5 +109,45 @@ defmodule PockerOpdracht.RankCalculator do
       end
     end
 
-  
+    defp is_full_house?(values) do
+      case three_cards_same_value?(values) && contains_pair?(values) do
+        false -> false
+        true -> true
+      end
+    end
+
+    defp three_cards_same_value?(values) do
+      case Enum.count(values) == 5 do
+        false -> false
+        true ->
+          values = Enum.map values, fn x -> @values_rank[x] end
+          sorted_values = Enum.sort(values)
+          case sorted_values |> Enum.take(3) |> Enum.uniq() |> length() == 1 do
+            true -> true
+            false -> case sorted_values |> Enum.reverse() |> Enum.take(3) |> Enum.uniq() |> length() == 1 do
+              true -> true
+              false -> false
+            end
+          end
+      end
+    end
+
+    defp contains_pair?(values) do
+      case Enum.count(values) == 5 do
+        false -> false
+        true ->
+          values = Enum.map values, fn x -> @values_rank[x] end
+          sorted_values = Enum.sort(values)
+          case sorted_values |> Enum.chunk_every(2) |> Enum.any?(fn v -> v |> Enum.uniq() |> length() == 1 end) do
+            true -> true
+            false ->
+              case sorted_values |> Enum.reverse() |> Enum.chunk_every(2) |> Enum.any?(fn v -> v |> Enum.uniq() |> length()end) do
+                true -> true
+                false -> false
+              end
+          end
+      end
+    end
+
+
 end
