@@ -4,7 +4,6 @@ defmodule PockerOpdracht.RankCalculator do
   provides functions cumputing the rank of a pocker hand
   """
 
-  @index [0, 1, 2, 3, 4]
   @values_rank %{
     "2" => 0,
     "3" => 1,
@@ -40,9 +39,13 @@ defmodule PockerOpdracht.RankCalculator do
           rank == :straight_flush -> {hand_name, :straight_flush, values}
           rank == :four_of_a_kind -> {hand_name, :four_of_a_kind, values}
           rank == :full_house -> {hand_name, :full_house, values}
+          rank == :flush -> {hand_name, :flush, values}
+          rank == :straight -> {hand_name, :straight, values}
+          rank == :three_of_a_kind -> {hand_name, :three_of_a_kind, values}
+          rank == :two_pairs -> {hand_name, :two_pairs, values}
+          rank == :pair -> {hand_name, :pair, values}
+          rank == :high_card -> {hand_name, :high_card, values}
 
-          true ->
-            {hand_name, :high_card, values}
         end
     end
 
@@ -53,6 +56,13 @@ defmodule PockerOpdracht.RankCalculator do
       is_straight_flush?(suits, values) -> {:ok, :straight_flush}
       is_four_of_a_kind?(values) -> {:ok, :four_of_a_kind}
       is_full_house?(values) -> {:ok, :full_house}
+      is_flush?(suits) -> {:ok, :flush}
+      is_straight?(values) -> {:ok, :straight}
+      is_three_of_a_kind?(values) -> {:ok, :three_of_a_kind}
+      is_two_pairs?(values) -> {:ok, :two_pairs}
+      is_pair?(values) -> {:ok, :pair}
+
+      is_high_card?(suits, values) -> {:ok, :high_card}
 
     end
 
@@ -71,7 +81,7 @@ defmodule PockerOpdracht.RankCalculator do
   end
 
   defp is_straight_flush?(suits, values) when is_list(suits) do
-    case same_suits?(suits) && has_consecutive_values?(values) do
+    case same_suits?(suits) && five_consecutive_values?(values) do
       true -> true
       false -> false
     end
@@ -84,17 +94,19 @@ defmodule PockerOpdracht.RankCalculator do
     end
   end
 
-  defp has_consecutive_values?(values) do
-    case Enum.count(values) == 5 do
-      false -> false
-      true ->
-        values = Enum.map values, fn x -> @values_rank[x] end
-        Enum.all? values, fn v ->
-          Enum.each @index, fn i ->
-            v + 1 == Enum.at(values, i + 1)
-          end
-        end
-      end
+  defp five_consecutive_values?([]) do
+    false
+  end
+
+  defp five_consecutive_values?(values) do
+
+    values = values |> Enum.map(fn v -> @values_rank[v]end)
+    values = List.to_tuple(values)
+    elem(values, 0) + 1 == elem(values, 1) &&
+    elem(values, 1) + 1 == elem(values, 2) &&
+    elem(values, 2) + 1 == elem(values, 3) &&
+    elem(values, 3) + 1 == elem(values, 4) 
+
   end
 
   defp is_four_of_a_kind?(values) do
@@ -102,9 +114,8 @@ defmodule PockerOpdracht.RankCalculator do
       false -> false
       true ->
         Enum.any? values, fn v ->
-          4 == Enum.count values, fn s -> s == v
-        end
-      end 
+          4 == Enum.count values, fn s -> s == v end
+      end
       end
     end
 
@@ -128,17 +139,53 @@ defmodule PockerOpdracht.RankCalculator do
     defp contains_pair?(values) do
       case Enum.count(values) == 5 do
         false -> false
-        true ->
-          values = Enum.map values, fn x -> @values_rank[x] end
-          values = Enum.sort(values)
-
-          values |> Enum.any?( fn v ->
-            Enum.each @index, fn i ->
-              v == Enum.at(values, i + 1)
-            end
-          end )
+        true -> Enum.any? values, fn v ->
+          2 == Enum.count values, fn s -> s == v
+        end
+      end
       end
     end
 
+    defp is_flush?(suits) do
+      same_suits?(suits)
+    end
 
-end
+    defp is_straight?(values) do
+      five_consecutive_values?(values)
+    end
+
+    defp is_three_of_a_kind?(values) do
+      three_cards_same_value?(values)
+    end
+
+    defp is_two_pairs?(values) do
+      case Enum.count(values) == 5 do
+        false ->  false
+        true -> cond do
+          values |> Enum.uniq() |> length() == 2 or values
+          |> Enum.uniq() |> length() == 3 ->
+            true
+          true ->
+            false
+        end
+      end
+    end
+
+    defp is_pair?(values) do
+      contains_pair?(values)
+    end
+
+    defp is_high_card?(suits, values) do
+      !is_straight_flush?(suits, values) &&
+      !is_four_of_a_kind?(values) &&
+      !is_full_house?(values) &&
+      !is_flush?(suits) &&
+      !is_straight?(values) &&
+      !is_three_of_a_kind?(values) &&
+      !is_two_pairs?(values) &&
+      !is_pair?(values)
+
+    end
+
+
+  end
