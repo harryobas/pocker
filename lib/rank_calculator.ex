@@ -20,6 +20,8 @@ defmodule PockerOpdracht.RankCalculator do
     "A" => 12
   }
 
+  @suits  ["C", "D", "H", "S"]
+
   def compute_rank(pocker_hand) do
     hand_name =
       pocker_hand
@@ -29,27 +31,31 @@ defmodule PockerOpdracht.RankCalculator do
       |> to_string
 
     poker_hand = hd(pocker_hand)
-    {_, deck} = poker_hand
-    suits = deck |> String.split(" ") |> extract_suites
-    values = deck |> String.split(" ") |> extract_values
+    {_, cards} = poker_hand
+    suits = cards |> String.split(" ") |> extract_suites
+    values = cards |> String.split(" ") |> extract_values
 
-    case get_rank(suits, values) do
-      {:ok, rank} ->
-        cond do
-          rank == :straight_flush -> {hand_name, :straight_flush, values}
-          rank == :four_of_a_kind -> {hand_name, :four_of_a_kind, values}
-          rank == :full_house -> {hand_name, :full_house, values}
-          rank == :flush -> {hand_name, :flush, values}
-          rank == :straight -> {hand_name, :straight, values}
-          rank == :three_of_a_kind -> {hand_name, :three_of_a_kind, values}
-          rank == :two_pairs -> {hand_name, :two_pairs, values}
-          rank == :pair -> {hand_name, :pair, values}
-          rank == :high_card -> {hand_name, :high_card, values}
-
+    case values |> Enum.all?(fn v -> Enum.member?(Map.keys(@values_rank), v)end) &&
+    suits |> Enum.all?(fn s -> Enum.member?(@suits, s)end) do
+      false -> {:error, "invalid_pocker_hand"}
+      true ->
+        case get_rank(suits, values) do
+          {:ok, rank} ->
+            cond do
+              rank == :straight_flush -> {hand_name, :straight_flush, values}
+              rank == :four_of_a_kind -> {hand_name, :four_of_a_kind, values}
+              rank == :full_house -> {hand_name, :full_house, values}
+              rank == :flush -> {hand_name, :flush, values}
+              rank == :straight -> {hand_name, :straight, values}
+              rank == :three_of_a_kind -> {hand_name, :three_of_a_kind, values}
+              rank == :two_pairs -> {hand_name, :two_pairs, values}
+              rank == :pair -> {hand_name, :pair, values}
+              rank == :high_card -> {hand_name, :high_card, values}
+            end
+          end
         end
-    end
+      end
 
-  end
 
   defp get_rank(suits, values) do
     cond do
@@ -63,9 +69,7 @@ defmodule PockerOpdracht.RankCalculator do
       is_pair?(values) -> {:ok, :pair}
 
       is_high_card?(suits, values) -> {:ok, :high_card}
-
     end
-
   end
 
   defp extract_suites(suits) do
@@ -105,7 +109,7 @@ defmodule PockerOpdracht.RankCalculator do
     elem(values, 0) + 1 == elem(values, 1) &&
     elem(values, 1) + 1 == elem(values, 2) &&
     elem(values, 2) + 1 == elem(values, 3) &&
-    elem(values, 3) + 1 == elem(values, 4) 
+    elem(values, 3) + 1 == elem(values, 4)
 
   end
 
