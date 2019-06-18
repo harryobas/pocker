@@ -15,11 +15,19 @@ defmodule PockerOpdracht.RankRuleEngine do
     :straight_flush => 8
   }
 
-  def winner(rank_one, rank_two) do
+  def winner(player_one, player_two) do
     cond do
-      @pocker_hands[rank_one] > @pocker_hands[rank_two] ->
-        {:winner, to_string(rank_one)}
+      @pocker_hands[elem(player_one, 1)] > @pocker_hands[elem(player_two, 1)] ->
+        {:winner, elem(player_one, 0), to_string(elem(player_one, 1))}
+
+      @pocker_hands[elem(player_two, 1)] > @pocker_hands[elem(player_one, 1)] ->
+        {:winner, elem(player_two, 0), to_string(elem(player_two, 1))}
+
+      @pocker_hands[elem(player_one, 1)] == @pocker_hands[elem(player_two, 1)] ->
+        apply_same_rank_rule
+
     end
+
   end
 
 end
