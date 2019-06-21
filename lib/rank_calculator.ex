@@ -4,7 +4,7 @@ defmodule PockerOpdracht.RankCalculator do
   provides functions cumputing the rank of a pocker hand
   """
 
-  @values_rank %{
+  @values_map %{
     "2" => 0,
     "3" => 1,
     "4" => 2,
@@ -35,7 +35,7 @@ defmodule PockerOpdracht.RankCalculator do
     suits = cards |> String.split(" ") |> extract_suites
     values = cards |> String.split(" ") |> extract_values
 
-    case values |> Enum.all?(fn v -> Enum.member?(Map.keys(@values_rank), v)end) &&
+    case values |> Enum.all?(fn v -> Enum.member?(Map.keys(@values_map), v)end) &&
     suits |> Enum.all?(fn s -> Enum.member?(@suits, s)end) do
       false -> {:error, "invalid_pocker_hand"}
       true ->
@@ -104,7 +104,7 @@ defmodule PockerOpdracht.RankCalculator do
 
   defp five_consecutive_values?(values) do
 
-    values = values |> Enum.map(fn v -> @values_rank[v]end)
+    values = values |> Enum.map(fn v -> @values_map[v]end)
     values = List.to_tuple(values)
     elem(values, 0) + 1 == elem(values, 1) &&
     elem(values, 1) + 1 == elem(values, 2) &&
@@ -189,6 +189,10 @@ defmodule PockerOpdracht.RankCalculator do
       !is_two_pairs?(values) &&
       !is_pair?(values)
 
+    end
+
+    def values_map do
+      @values_map
     end
 
 
