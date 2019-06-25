@@ -2,7 +2,7 @@
 defmodule RankRuleEngineTest do
   use ExUnit.Case, async: true
 
-  @subject PockerOpdracht.RankRuleEngine
+  @subject PockerOpdracht.Ranking.RuleEngine
 
   describe "rank rule engine" do
     test """

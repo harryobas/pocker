@@ -1,6 +1,6 @@
-defmodule PockerOpdracht.RankRuleEngine do
+defmodule PockerOpdracht.Ranking.RuleEngine do
 
-  import PockerOpdracht.RankCalculator
+  import PockerOpdracht.Ranking.Oracle
 
 
   @moduledoc """

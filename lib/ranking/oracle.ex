@@ -1,4 +1,4 @@
-defmodule PockerOpdracht.RankCalculator do
+defmodule PockerOpdracht.Ranking.Oracle do
 
   @moduledoc """
   provides functions cumputing the rank of a pocker hand
@@ -35,8 +35,7 @@ defmodule PockerOpdracht.RankCalculator do
     suits = cards |> String.split(" ") |> extract_suites
     values = cards |> String.split(" ") |> extract_values
 
-    case values |> Enum.all?(fn v -> Enum.member?(Map.keys(@values_map), v)end) &&
-    suits |> Enum.all?(fn s -> Enum.member?(@suits, s)end) do
+    case is_valid_pocker_hand?(values, suits) do
       false -> {:error, "invalid_pocker_hand"}
       true ->
         case get_rank(suits, values) do
@@ -189,6 +188,11 @@ defmodule PockerOpdracht.RankCalculator do
       !is_two_pairs?(values) &&
       !is_pair?(values)
 
+    end
+
+    defp is_valid_pocker_hand?(values, suits) do
+      values |> Enum.all?(fn v -> Enum.member?(Map.keys(@values_map), v)end) &&
+      suits |> Enum.all?(fn s -> Enum.member?(@suits, s)end)
     end
 
     def values_map do

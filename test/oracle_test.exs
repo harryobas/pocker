@@ -2,7 +2,7 @@
 defmodule RankCalculatorTest do
   use ExUnit.Case, async: true
 
-  @subject PockerOpdracht.RankCalculator
+  @subject PockerOpdracht.Ranking.Oracle
 
   describe "rank computation" do
     test "5 cards of same suit with consecutive values - compute_rank/1 returns {hand_name, :straight_flush, values}" do
