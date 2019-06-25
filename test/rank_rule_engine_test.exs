@@ -65,6 +65,22 @@ defmodule RankRuleEngineTest do
     rank_one = {"black", :full_house, ["3", "K", "K", "K", "3"]}
     rank_two = {"white", :full_house, ["4", "K", "K", "K", "4"]}
     assert {:winner, "tie"} == @subject.winner(rank_one, rank_two)
+  end
+  test """
+  when both pocker hands have a rank of :flush - winner/2 returns winner based
+  on the card with highest value
+  """ do
+    rank_one = {"black", :flush, ["2", "6", "9", "J", "A"]}
+    rank_two = {"white", :flush, ["2", "6", "9", "J", "5"]}
+    assert {:winner, "black", "flush"} == @subject.winner rank_one, rank_two
+  end
+  test """
+  when both pocker hands have a rank of :flush and card with highest
+  value is the same on both hands
+  """ do
+    rank_one = {"black", :flush, ["2", "6", "9", "J", "A"]}
+    rank_two = {"white", :flush, ["2", "6", "9", "J", "A"]}
+    assert {:winner, "tie"} == @subject.winner rank_one, rank_two
 
   end
 

@@ -68,6 +68,15 @@ defmodule PockerOpdracht.RankRuleEngine do
 
        player_one_and_player_two_tie_on_full_house?(player_one, player_two) ->
          {:ok, :tie}
+
+      player_one_wins_with_flush?(player_one, player_two) ->
+        {:ok, elem(player_one, 0), to_string(elem(player_one, 1))}
+
+      player_two_wins_with_flush?(player_one, player_two) ->
+        {:ok, elem(player_two, 0), to_string(elem(player_two, 1))}
+
+      player_one_and_player_two_tie_on_flush?(player_one, player_two) ->
+        {:ok, :tie}
      end
 
    end
@@ -209,6 +218,88 @@ defmodule PockerOpdracht.RankRuleEngine do
 
   end
 
+  defp player_one_wins_with_flush?(player_one, player_two) do
+    {player_one_rank, player_two_rank} = get_players_rank(player_one, player_two)
+
+    case player_one_rank == :flush && player_two_rank == :flush do
+      false -> false
+      true ->
+        player_one_values = elem(player_one, 2)
+        player_two_values = elem(player_two, 2)
+
+        {val_one, val_two} = high_card_rule(player_one_values, player_two_values)
+        val_one > val_two
+    end
+
+  end
+
+  defp player_two_wins_with_flush?(player_one, player_two) do
+    {player_one_rank, player_two_rank} = get_players_rank(player_one, player_two)
+
+    case player_one_rank == :flush && player_two_rank == :flush do
+      false -> false
+      true ->
+        player_one_values = elem(player_one, 2)
+        player_two_values = elem(player_two, 2)
+
+        {val_one, val_two} = high_card_rule(player_one_values, player_two_values)
+        val_two > val_one
+    end
+
+  end
+
+  defp player_one_and_player_two_tie_on_flush?(player_one, player_two) do
+    {player_one_rank, player_two_rank} = get_players_rank(player_one, player_two)
+
+    case player_one_rank == :flush && player_two_rank == :flush do
+      false -> false
+      true ->
+        player_one_values = elem(player_one, 2)
+        player_two_values = elem(player_two, 2)
+
+        {val_one, val_two} = high_card_rule(player_one_values, player_two_values)
+        val_two == val_one
+    end
+
+  end
+
+  defp high_card_rule(values_one, values_two) do
+    values_one = values_one
+    |> Enum.map(fn v -> values_map()[v]end)
+    |> Enum.sort()
+    |> Enum.reverse()
+
+    values_two = values_two
+    |> Enum.map(fn v -> values_map()[v]end)
+    |> Enum.sort()
+    |> Enum.reverse()
+
+    case Enum.at(values_one, 0) == Enum.at(values_two, 0) do
+      false -> {Enum.at(values_one, 0), Enum.at(values_two, 0)}
+      true ->
+        case Enum.at(values_one, 1) == Enum.at(values_two, 1) do
+          false -> {Enum.at(values_one, 1), Enum.at(values_two, 1)}
+          true ->
+            case Enum.at(values_one, 2) == Enum.at(values_two, 2) do
+              false -> {Enum.at(values_one, 2), Enum.at(values_two, 2)}
+              true ->
+                case Enum.at(values_one, 3) == Enum.at(values_two, 3) do
+                  false -> {Enum.at(values_one, 3), Enum.at(values_two, 3)}
+                  true ->
+                    case Enum.at(values_one, 4) == Enum.at(values_two, 4) do
+                      false -> {Enum.at(values_one, 4), Enum.at(values_two, 4)}
+                      true ->
+                        {Enum.at(values_one, 4), Enum.at(values_two, 4)}
+                    end
+                end
+
+            end
+        end
+
+    end
+
+  end
+
   defp get_dupe_value_full_house(values, dupes) do
     case length(dupes) == 2 do
       true ->
@@ -222,7 +313,6 @@ defmodule PockerOpdracht.RankRuleEngine do
   end
 
   defp get_values_rank(player_one, player_two) do
-
     player_one_values = elem(player_one, 2)
     player_two_values = elem(player_two, 2)
 
