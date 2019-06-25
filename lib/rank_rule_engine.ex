@@ -104,7 +104,6 @@ defmodule PockerOpdracht.RankRuleEngine do
     end
   end
 
-
   defp player_two_wins_with_straight_flush?(player_one, player_two) do
     {player_one_rank , player_two_rank} = get_players_rank(player_one, player_two)
 
@@ -183,8 +182,8 @@ defmodule PockerOpdracht.RankRuleEngine do
 
         {dupe_one_values, dupe_two_values} = dupe_values(player_one_values, player_two_values)
 
-        {:ok, dupe_val_one} = get_dupe_value_full_house(player_one_values, dupe_one_values)
-        {:ok, dupe_val_two} = get_dupe_value_full_house(player_two_values, dupe_two_values)
+        {:ok, dupe_val_one} = three_dupe_values(player_one_values, dupe_one_values)
+        {:ok, dupe_val_two} = three_dupe_values(player_two_values, dupe_two_values)
 
           values_map()[dupe_val_one] > values_map()[dupe_val_two]
     end
@@ -202,8 +201,8 @@ defmodule PockerOpdracht.RankRuleEngine do
 
         {dupe_one_values, dupe_two_values} = dupe_values(player_one_values, player_two_values)
 
-        {:ok, dupe_val_one} = get_dupe_value_full_house(player_one_values, dupe_one_values)
-        {:ok, dupe_val_two} = get_dupe_value_full_house(player_two_values, dupe_two_values)
+        {:ok, dupe_val_one} = three_dupe_values(player_one_values, dupe_one_values)
+        {:ok, dupe_val_two} = three_dupe_values(player_two_values, dupe_two_values)
 
           values_map()[dupe_val_two] > values_map()[dupe_val_one]
     end
@@ -221,8 +220,8 @@ defmodule PockerOpdracht.RankRuleEngine do
 
         {dupe_one_values, dupe_two_values} = dupe_values(player_one_values, player_two_values)
 
-        {:ok, dupe_val_one} = get_dupe_value_full_house(player_one_values, dupe_one_values)
-        {:ok, dupe_val_two} = get_dupe_value_full_house(player_two_values, dupe_two_values)
+        {:ok, dupe_val_one} = three_dupe_values(player_one_values, dupe_one_values)
+        {:ok, dupe_val_two} = three_dupe_values(player_two_values, dupe_two_values)
 
           values_map()[dupe_val_two] == values_map()[dupe_val_one]
     end
@@ -346,7 +345,7 @@ defmodule PockerOpdracht.RankRuleEngine do
 
   end
 
-  defp get_dupe_value_full_house(values, dupes) do
+  defp three_dupe_values(values, dupes) do
     case length(dupes) == 2 do
       true ->
         [h|t] = dupes
@@ -354,7 +353,7 @@ defmodule PockerOpdracht.RankRuleEngine do
           true -> {:ok, h}
           false -> {:ok, hd(t)}
         end
-        _ -> :error
+        false -> {:ok, hd(dupes)}
     end
   end
 
