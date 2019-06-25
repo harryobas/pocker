@@ -76,10 +76,27 @@ defmodule RankRuleEngineTest do
   end
   test """
   when both pocker hands have a rank of :flush and card with highest
-  value is the same on both hands
+  value is the same on both hands - winner/2 returns {:winner, "tie"}
   """ do
     rank_one = {"black", :flush, ["2", "6", "9", "J", "A"]}
     rank_two = {"white", :flush, ["2", "6", "9", "J", "A"]}
+    assert {:winner, "tie"} == @subject.winner rank_one, rank_two
+  end
+  test """
+  when both pocker hands have a rank of :straigth - winner/2 returns winner
+  based on the card with the highest value
+  """ do
+    rank_one = {"black", :straight, ["2", "3", "4", "5", "6"]}
+    rank_two = {"white", :straight, ["5", "6", "7", "8", "9"]}
+    assert {:winner, "white", "straight"} == @subject.winner rank_one, rank_two
+  end
+  test """
+  when both pocker hands have a rank of :straight and their
+  card with highest value is the same value - winner/2 returns
+  {:winner, "tie"}
+  """ do
+    rank_one = {"black", :straight, ["2", "3", "4", "5", "6"]}
+    rank_two = {"white", :straight, ["2", "3", "4", "5", "6"]}
     assert {:winner, "tie"} == @subject.winner rank_one, rank_two
 
   end
