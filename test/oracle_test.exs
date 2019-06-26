@@ -65,6 +65,7 @@ defmodule RankCalculatorTest do
       assert {hand_name, :high_card, values} == @subject.compute_rank(hand)
 
     end
+
   end
 
 end

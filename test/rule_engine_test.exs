@@ -98,6 +98,23 @@ defmodule RankRuleEngineTest do
     rank_one = {"black", :straight, ["2", "3", "4", "5", "6"]}
     rank_two = {"white", :straight, ["2", "3", "4", "5", "6"]}
     assert {:winner, "tie"} == @subject.winner rank_one, rank_two
+  end
+  test """
+  when both pocker hands have rank :three_of_a_kind - winner/2 returns
+  returns winner based on the values of the three cards that are the same
+  on both hands
+  """ do
+    rank_one = {"black", :three_of_a_kind, ["6", "7", "6", "5", "6"]}
+    rank_two = {"white", :three_of_a_kind, ["3", "7", "3", "5", "3"]}
+    assert {:winner, "black", "three_of_a_kind"} == @subject.winner rank_one, rank_two
+  end
+  test """
+  when both pocker hands have rank :three_of_a_kind and
+  three cards of the same value are the same on both hands
+  """ do
+    rank_one = {"black", :three_of_a_kind, ["6", "7", "6", "5", "6"]}
+    rank_two = {"white", :three_of_a_kind, ["6", "7", "6", "5", "6"]}
+    assert {:winner, "tie"} == @subject.winner rank_one, rank_two
 
   end
 

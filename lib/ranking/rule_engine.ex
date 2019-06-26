@@ -81,11 +81,19 @@ defmodule PockerOpdracht.Ranking.RuleEngine do
       player_one_wins_with_straight?(player_one, player_two) ->
          {:ok, elem(player_one, 0), to_string(elem(player_one, 1))}
 
-
       player_two_wins_with_straight?(player_one, player_two) ->
         {:ok, elem(player_two, 0), to_string(elem(player_two, 1))}
 
       player_one_and_player_two_tie_on_straight?(player_one, player_two) ->
+        {:ok, :tie}
+
+      player_one_wins_with_three_of_a_kind?(player_one, player_two) ->
+        {:ok, elem(player_one, 0), to_string(elem(player_one, 1))}
+
+      player_two_wins_with_three_of_a_kind?(player_one, player_two) ->
+        {:ok, elem(player_two, 0), to_string(elem(player_two, 1))}
+
+      player_one_and_player_two_tie_on_three_of_a_kind?(player_one, player_two) ->
         {:ok, :tie}
 
      end
@@ -308,6 +316,70 @@ defmodule PockerOpdracht.Ranking.RuleEngine do
 
   end
 
+  def player_one_wins_with_three_of_a_kind?(player_one, player_two) do
+    {player_one_rank, player_two_rank} = get_players_rank(player_one, player_two)
+
+    case player_one_rank == :three_of_a_kind && player_two_rank == :three_of_a_kind do
+      false -> false
+      true ->
+        player_one_values = elem(player_one, 2)
+        player_two_values = elem(player_two, 2)
+
+        {dupe_one_values, dupe_two_values} = dupe_values(player_one_values, player_two_values)
+
+        {:ok, dupe_val_one} = three_dupe_values(player_one_values, dupe_one_values)
+        {:ok, dupe_val_two} = three_dupe_values(player_two_values, dupe_two_values)
+
+          values_map()[dupe_val_one] > values_map()[dupe_val_two]
+    end
+
+  end
+
+  defp player_two_wins_with_three_of_a_kind?(player_one, player_two) do
+    {player_one_rank, player_two_rank} = get_players_rank(player_one, player_two)
+
+    case player_one_rank == :three_of_a_kind && player_two_rank == :three_of_a_kind do
+      false -> false
+      true ->
+        {player_one_values, player_two_values} = get_values_rank(player_one, player_two)
+
+        {dupe_one_values, dupe_two_values} = dupe_values(player_one_values, player_two_values)
+
+        {:ok, dupe_val_one} = three_dupe_values(player_one_values, dupe_one_values)
+        {:ok, dupe_val_two} = three_dupe_values(player_two_values, dupe_two_values)
+
+          values_map()[dupe_val_two] > values_map()[dupe_val_one]
+    end
+
+  end
+
+  defp player_one_and_player_two_tie_on_three_of_a_kind?(player_one, player_two) do
+    {player_one_rank, player_two_rank} = get_players_rank(player_one, player_two)
+
+    case player_one_rank == :three_of_a_kind && player_two_rank == :three_of_a_kind do
+      false -> false
+      true ->
+        {player_one_values, player_two_values} = get_values_rank(player_one, player_two)
+
+        {dupe_one_values, dupe_two_values} = dupe_values(player_one_values, player_two_values)
+
+        {:ok, dupe_val_one} = three_dupe_values(player_one_values, dupe_one_values)
+        {:ok, dupe_val_two} = three_dupe_values(player_two_values, dupe_two_values)
+
+          values_map()[dupe_val_two] == values_map()[dupe_val_one]
+    end
+
+  end
+
+
+
+
+
+
+
+
+
+
   defp high_card_rule(values_one, values_two) do
     values_one = values_one
     |> Enum.map(fn v -> values_map()[v]end)
@@ -348,16 +420,19 @@ defmodule PockerOpdracht.Ranking.RuleEngine do
   defp three_dupe_values(values, dupes) do
     case length(dupes) == 2 do
       true ->
-        [h|t] = dupes
-        case 3 == Enum.count(values, fn v -> v == h end) do
-          true -> {:ok, h}
-          false -> {:ok, hd(t)}
-        end
-        false -> {:ok, hd(dupes)}
+        cond do
+          3 == Enum.count(values, fn v -> v == Enum.at(dupes, 0) end) ->
+            {:ok, Enum.at(dupes, 0)}
+          3 == Enum.count(values, fn v -> v == Enum.at(dupes, 1)end) ->
+            {:ok, Enum.at(dupes, 1)}
+          end
+      false ->
+        {:ok, hd(dupes)}
     end
+
   end
 
-  def get_values_rank(player_one, player_two) do
+  defp get_values_rank(player_one, player_two) do
     player_one_values = elem(player_one, 2)
     player_two_values = elem(player_two, 2)
 
