@@ -341,7 +341,8 @@ defmodule PockerOpdracht.Ranking.RuleEngine do
     case player_one_rank == :three_of_a_kind && player_two_rank == :three_of_a_kind do
       false -> false
       true ->
-        {player_one_values, player_two_values} = get_values_rank(player_one, player_two)
+        player_one_values = elem(player_one, 2)
+        player_two_values = elem(player_two, 2)
 
         {dupe_one_values, dupe_two_values} = dupe_values(player_one_values, player_two_values)
 
@@ -359,7 +360,8 @@ defmodule PockerOpdracht.Ranking.RuleEngine do
     case player_one_rank == :three_of_a_kind && player_two_rank == :three_of_a_kind do
       false -> false
       true ->
-        {player_one_values, player_two_values} = get_values_rank(player_one, player_two)
+        player_one_values = elem(player_one, 2)
+        player_two_values = elem(player_two, 2)
 
         {dupe_one_values, dupe_two_values} = dupe_values(player_one_values, player_two_values)
 
@@ -370,6 +372,32 @@ defmodule PockerOpdracht.Ranking.RuleEngine do
     end
 
   end
+
+  defp player_one_wins_with_two_pairs?(player_one, player_two) do
+    {player_one_rank, player_two_rank} = get_players_rank(player_one, player_two)
+
+    case player_one_rank == :two_pairs && player_two_rank == :two_pairs do
+      false -> false
+      true ->
+        {pair_one, }
+
+    end
+
+  end
+
+  defp two_pair_rule(values_one, values_two) do
+    case elem(values_one, 0) > elem(values_one, 1) && elem(values_two, 0) > elem(values_two, 1) do
+      true ->
+        {elem(values_one, 0), elem(values_two, 0)}
+        false ->
+          case elem(values_one, 1) > elem(values_one, 0) && elem(values_two, 1) > elem(values_two, 0) do
+            true ->
+              {elem(values_one, 1), elem(values_two, 1)}
+            false ->
+              {elem(values_one, 2), elem(values_two, 2)}
+            end
+          end
+        end
 
 
 
