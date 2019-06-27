@@ -96,6 +96,15 @@ defmodule PockerOpdracht.Ranking.RuleEngine do
       player_one_and_player_two_tie_on_three_of_a_kind?(player_one, player_two) ->
         {:ok, :tie}
 
+      player_one_wins_with_two_pairs?(player_one, player_two) ->
+        {:ok, elem(player_one, 0), to_string(elem(player_one, 1))}
+
+      player_two_wins_with_two_pairs?(player_one, player_two) ->
+        {:ok, elem(player_two, 0), to_string(elem(player_two, 1))}
+
+      player_one_and_player_two_tie_on_two_pairs?(player_one, player_two) ->
+        {:ok, :tie}
+
      end
 
    end
@@ -379,33 +388,93 @@ defmodule PockerOpdracht.Ranking.RuleEngine do
     case player_one_rank == :two_pairs && player_two_rank == :two_pairs do
       false -> false
       true ->
-        {pair_one, }
+        player_one_values = elem(player_one, 2)
+        player_two_values = elem(player_two, 2)
+
+        {dupe_one_values, dupe_two_values} = dupe_values(player_one_values, player_two_values)
+
+        {uniq_one, uniq_two} = uniq_values(player_one_values, player_two_values)
+
+        pair_one_and_uniq = {hd(dupe_one_values), hd(tl(dupe_one_values)), uniq_one}
+        pair_two_and_uniq = {hd(dupe_two_values), hd(tl(dupe_two_values)), uniq_two}
+
+        {val_one, val_two} = two_pairs_rule(pair_one_and_uniq, pair_two_and_uniq)
+
+        val_one > val_two
 
     end
 
   end
 
-  defp two_pair_rule(values_one, values_two) do
+  defp player_two_wins_with_two_pairs?(player_one, player_two) do
+    {player_one_rank, player_two_rank} = get_players_rank(player_one, player_two)
+
+    case player_one_rank == :two_pairs && player_two_rank == :two_pairs do
+      false -> false
+      true ->
+        player_one_values = elem(player_one, 2)
+        player_two_values = elem(player_two, 2)
+
+        {dupe_one_values, dupe_two_values} = dupe_values(player_one_values, player_two_values)
+
+        {uniq_one, uniq_two} = uniq_values(player_one_values, player_two_values)
+
+        pair_one_and_uniq = {hd(dupe_one_values), hd(tl(dupe_one_values)), uniq_one}
+        pair_two_and_uniq = {hd(dupe_two_values), hd(tl(dupe_two_values)), uniq_two}
+
+        {val_one, val_two} = two_pairs_rule(pair_one_and_uniq, pair_two_and_uniq)
+
+        val_two > val_one
+      end
+
+  end
+
+  defp player_one_and_player_two_tie_on_two_pairs?(player_one, player_two) do
+    {player_one_rank, player_two_rank} = get_players_rank(player_one, player_two)
+
+    case player_one_rank == :two_pairs && player_two_rank == :two_pairs do
+      false -> false
+      true ->
+        player_one_values = elem(player_one, 2)
+        player_two_values = elem(player_two, 2)
+
+        {dupe_one_values, dupe_two_values} = dupe_values(player_one_values, player_two_values)
+
+        {uniq_one, uniq_two} = uniq_values(player_one_values, player_two_values)
+
+        pair_one_and_uniq = {hd(dupe_one_values), hd(tl(dupe_one_values)), uniq_one}
+        pair_two_and_uniq = {hd(dupe_two_values), hd(tl(dupe_two_values)), uniq_two}
+
+        {val_one, val_two} = two_pairs_rule(pair_one_and_uniq, pair_two_and_uniq)
+
+        val_two == val_one
+      end
+
+  end
+
+  defp two_pairs_rule(values_one, values_two) do
     case elem(values_one, 0) > elem(values_one, 1) && elem(values_two, 0) > elem(values_two, 1) do
       true ->
         {elem(values_one, 0), elem(values_two, 0)}
-        false ->
-          case elem(values_one, 1) > elem(values_one, 0) && elem(values_two, 1) > elem(values_two, 0) do
-            true ->
-              {elem(values_one, 1), elem(values_two, 1)}
-            false ->
-              {elem(values_one, 2), elem(values_two, 2)}
-            end
-          end
+      false ->
+        case elem(values_one, 1) > elem(values_one, 0) && elem(values_two, 1) > elem(values_two, 0) do
+          true ->
+            {elem(values_one, 1), elem(values_two, 1)}
+          false ->
+            {elem(values_one, 2), elem(values_two, 2)}
         end
+      end
+    end
 
 
 
+  defp uniq_values(values_one, values_two) do
+    uniq_one = Enum.uniq(values_one)
+    uniq_two = Enum.uniq(values_two)
 
+    {uniq_one, uniq_two}
 
-
-
-
+  end
 
 
   defp high_card_rule(values_one, values_two) do
