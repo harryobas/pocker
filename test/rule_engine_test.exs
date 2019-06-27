@@ -121,7 +121,7 @@ defmodule RankRuleEngineTest do
   when both pocker hands have rank :two_pairs - winner/2 returns
   winner based on the highest pair
   """ do
-    rank_one = {"black", :two_pairs, ["3", "5", "3", "5", "7"]}
+    rank_one = {"black", :two_pairs, ["K", "5", "K", "5", "7"]}
     rank_two = {"black", :two_pairs, ["2", "4", "2", "4", "7"]}
     assert {:winner, "black", "two_pairs"} == @subject.winner rank_one, rank_two
   end
@@ -132,7 +132,24 @@ defmodule RankRuleEngineTest do
   pair are the same winner/2 returns {:winner, "tie"}
   """ do
     rank_one = {"black", :two_pairs, ["3", "5", "3", "5", "7"]}
-    rank_two = {"black", :two_pairs, ["3", "5", "3", "5", "7"]}
+    rank_two = {"white", :two_pairs, ["3", "5", "3", "5", "7"]}
+    assert {:winner, "tie"} == @subject.winner rank_one, rank_two
+  end
+  test """
+  when both pocker hands have rank :pair - winner/2 returns winner
+  based on the value of cards forming the pair on each hand
+  """ do
+    rank_one = {"black", :pair, ["K", "5", "K", "6", "7"]}
+    rank_two = {"white", :pair, ["3", "9", "3", "5", "7"]}
+    assert {:winner, "black", "pair"} == @subject.winner rank_one, rank_two
+  end
+  test """
+  when both pocker hands are ranked :pair, value of cards forming pair
+  on each hand is the same and the value of the three remaining cards
+  are the same on both pocker hands - winner/2 returns {:winner, "tie"}
+  """ do
+    rank_one = {"black", :pair, ["K", "9", "K", "5", "7"]}
+    rank_two = {"white", :pair, ["K", "9", "K", "5", "7"]}
     assert {:winner, "tie"} == @subject.winner rank_one, rank_two
 
   end
