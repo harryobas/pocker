@@ -4,7 +4,7 @@ defmodule RankCalculatorTest do
 
   @subject PockerOpdracht.Ranking.Oracle
 
-  describe "rank computation" do
+  describe "oracle" do
     test "5 cards of same suit with consecutive values - compute_rank/1 returns {hand_name, :straight_flush, values}" do
       hand = [black: "2H 3H 4H 5H 6H"]
       values = ["2", "3", "4", "5", "6"]

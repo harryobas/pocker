@@ -4,7 +4,7 @@ defmodule RankRuleEngineTest do
 
   @subject PockerOpdracht.Ranking.RuleEngine
 
-  describe "rank rule engine" do
+  describe "rule engine" do
     test """
     when both pocker hands have different ranks - winner/2 returns winner based
     on the partial rank order of pocker hands
@@ -153,5 +153,6 @@ defmodule RankRuleEngineTest do
     assert {:winner, "tie"} == @subject.winner rank_one, rank_two
 
   end
+
 
 end
