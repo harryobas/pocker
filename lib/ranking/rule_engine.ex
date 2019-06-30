@@ -114,6 +114,15 @@ defmodule PockerOpdracht.Ranking.RuleEngine do
       player_one_and_player_two_tie_on_pair?(player_one, player_two) ->
         {:ok, :tie}
 
+      player_one_wins_with_high_card?(player_one, player_two) ->
+        {:ok, elem(player_one, 0), to_string(elem(player_one, 1))}
+
+      player_two_wins_with_high_card?(player_one, player_two) ->
+        {:ok, elem(player_two, 0), to_string(elem(player_two, 1))}
+
+      player_one_and_player_two_tie_on_high_card?(player_one, player_two) ->
+        {:ok, :tie}
+
      end
 
    end
@@ -533,6 +542,53 @@ defmodule PockerOpdracht.Ranking.RuleEngine do
 
   end
 
+  defp player_one_wins_with_high_card?(player_one, player_two) do
+    {player_one_rank, player_two_rank} = get_players_rank(player_one, player_two)
+
+    case player_one_rank == :high_card && player_two_rank == :high_card do
+      false -> false
+      true ->
+        player_one_values = elem(player_one, 2)
+        player_two_values = elem(player_two, 2)
+
+        {val_one, val_two} = high_card_rule(player_one_values, player_two_values)
+
+        val_one > val_two
+    end
+
+  end
+
+  defp player_two_wins_with_high_card?(player_one, player_two) do
+    {player_one_rank, player_two_rank} = get_players_rank(player_one, player_two)
+
+    case player_one_rank == :high_card && player_two_rank == :high_card do
+      false -> false
+      true ->
+        player_one_values = elem(player_one, 2)
+        player_two_values = elem(player_two, 2)
+
+        {val_one, val_two} = high_card_rule(player_one_values, player_two_values)
+
+        val_two > val_one
+    end
+
+  end
+
+  defp player_one_and_player_two_tie_on_high_card?(player_one, player_two) do
+    {player_one_rank, player_two_rank} = get_players_rank(player_one, player_two)
+
+    case player_one_rank == :high_card && player_two_rank == :high_card do
+      false -> false
+      true ->
+        player_one_values = elem(player_one, 2)
+        player_two_values = elem(player_two, 2)
+
+        {val_one, val_two} = high_card_rule(player_one_values, player_two_values)
+
+        val_one == val_two
+    end
+
+  end
 
 
   defp pair_rule(values_one, values_two) do

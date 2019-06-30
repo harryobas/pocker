@@ -60,7 +60,6 @@ defmodule RankCalculatorTest do
     """ do
       hand = [black: "2H 3D 5S 9C KD"]
       values = ["2", "3", "5", "9", "K"]
-
       hand_name = hand |> Enum.into(%{}) |> Map.keys |> List.first |> to_string
       assert {hand_name, :high_card, values} == @subject.compute_rank(hand)
 
