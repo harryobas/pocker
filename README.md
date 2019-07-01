@@ -8,7 +8,7 @@ if either has the higher rank.
 
 Follow the steps below:
 
-1. $ git clone "https://github.com/harryobas/pocker"
+1. $ git clone https://github.com/harryobas/pocker
 
 2. $ cd pocker
 
