@@ -41,8 +41,8 @@ defmodule PockerOpdracht do
           {name_two, rank_two, values_two} ->
 
             case RuleEngine.winner({name_one, rank_one, values_one}, {name_two, rank_two, values_two}) do
-              {:winner, player, rank} -> IO.puts "#{player} wins -  #{rank}"
-              {:winner, "tie"} -> IO.puts "tie"
+              {:winner, player, rank} -> IO.puts "#{String.capitalize(player)} wins -  #{rank}"
+              {:winner, "tie"} -> IO.puts "Tie"
 
             end
 
