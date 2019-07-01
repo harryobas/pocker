@@ -4,8 +4,8 @@ defmodule PockerOpdracht.Ranking.RuleEngine do
 
 
   @moduledoc """
-  provides functions to ascertain the winner between
-  two ranked pocker hands
+  provides functions and rules to ascertain the winner between
+  pairs ranked pocker hands
   """
   @pocker_hands %{
     :high_card => 0,

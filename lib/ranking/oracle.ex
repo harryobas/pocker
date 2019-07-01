@@ -1,7 +1,8 @@
 defmodule PockerOpdracht.Ranking.Oracle do
 
   @moduledoc """
-  provides functions cumputing the rank of a pocker hand
+  provides functions to cumpute/determine the rank associated with
+  a pocker hand
   """
 
   @values_map %{
