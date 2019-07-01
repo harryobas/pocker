@@ -1,6 +1,8 @@
 # PockerOpdracht
 
-**TODO: Add description**
+A tool to rank pairs of pocker hands as well as indicate which
+if either has the higher rank.
+
 
 ## Installation
 
@@ -18,4 +20,3 @@ end
 Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
 and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
 be found at [https://hexdocs.pm/pocker_opdracht](https://hexdocs.pm/pocker_opdracht).
-
