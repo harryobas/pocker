@@ -4,19 +4,14 @@ A tool to rank pairs of pocker hands as well as indicate which
 if either has the higher rank.
 
 
-## Installation
+## Usage instructions
 
-If [available in Hex](https://hex.pm/docs/publish), the package can be installed
-by adding `pocker_opdracht` to your list of dependencies in `mix.exs`:
+Follow the steps below:
 
-```elixir
-def deps do
-  [
-    {:pocker_opdracht, "~> 0.1.0"}
-  ]
-end
-```
+1. $ git clone "https://github.com/harryobas/pocker"
 
-Documentation can be generated with [ExDoc](https://github.com/elixir-lang/ex_doc)
-and published on [HexDocs](https://hexdocs.pm). Once published, the docs can
-be found at [https://hexdocs.pm/pocker_opdracht](https://hexdocs.pm/pocker_opdracht).
+2. $ cd pocker
+
+3. $ iex -S mix
+
+4. iex(1)> PockerOpdracht.play("black 2H 3D 5S 9C KD", "white 2D 3H 5C 9S KH")
