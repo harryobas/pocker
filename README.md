@@ -4,7 +4,7 @@ A tool to rank pairs of pocker hands as well as indicate which
 if either has the higher rank.
 
 
-## Usage instructions
+## Usage Instructions
 
 Follow the steps below:
 
